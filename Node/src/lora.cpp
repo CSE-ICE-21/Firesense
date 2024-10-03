@@ -25,7 +25,7 @@ void listenForPackets(unsigned long loopDuration)
                     if (deviceID == LoRaData)
                     {
                         Serial.println("Recieved Acknowledgement");
-                        deepSleepESP();
+                        esp_deep_sleep_start();
                     }
                     else
                     {

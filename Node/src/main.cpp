@@ -1,16 +1,17 @@
-#include <functions.h>
-#include <LoRa.h>
 #include <globals.h>
-#include <constants.h>
+#include <functions.h>
 
-void setup() {
-  setupSerial();
+RTC_DATA_ATTR int system_state = 0;
+
+void setup()
+{
+  setupSerial(); // Comment out this line on production builds in addition to all Serial Print statements.
   initLora();
-  deviceID = generateRandomID();
+  sensorSetup();
+  runFunction(system_state);
 }
 
-void loop() {
-  listenForPackets(LISTENING_INTERVAL);
-  sendPacket(deviceID);
+void loop()
+{
+  // The ESP32 will enter deep sleep and not reach this point. loop() function is not used.
 }
-

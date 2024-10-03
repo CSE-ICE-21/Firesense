@@ -5,7 +5,8 @@ void setupSerial();
 void initLora();
 String generateRandomID();
 bool validateID(String id);
-void deepSleepESP();
+void runFunction(int state_number);
+void sensorSetup();
 
 // lora
 void listenForPackets(unsigned long loopDuration);
