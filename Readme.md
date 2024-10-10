@@ -1,13 +1,13 @@
-<p align="center"><img src="./Docs/Readme Assets/logo.png" width="200" /></p>
+<p align="center"><img src="./Docs/Readme-Assets/logo.png" width="200" /></p>
 
 <p align="center">
     <picture>
       <source 
-        srcset="./Docs/Readme Assets/dark-text.png"
+        srcset="./Docs/Readme-Assets/light-text.png"
         media="(prefers-color-scheme: dark)"
       />
       <img 
-        src="./Docs/Readme Assets/light-text.png" 
+        src="./Docs/Readme-Assets/dark-text.png" 
         alt="Logo Text"
         width="800"
        />
@@ -28,7 +28,7 @@ This project focuses on creating a wireless mesh network for early wildfire dete
 <br>
 <p align="center">
 <a href="https://github.com/chathura-de-silva/Firesense/wiki">
-<img src="./Docs/Readme Assets/ReadMoreButton.png" a
+<img src="./Docs/Readme-Assets/ReadMoreButton.png" a
 style="width: 60%; height: auto;" alt="Wiki Button" 
 ></a>
 </p>
