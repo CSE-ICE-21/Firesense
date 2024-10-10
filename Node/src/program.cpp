@@ -1,43 +1,65 @@
 #include <globals.h>
 #include <functions.h>
 #include <constants.h>
+#include <LoRa.h>
+
+void _systemReset(uint64_t resetInterval) // Reset the system after a certain time.
+{
+    Serial.println("Shutting down the Node...Will reset and restart after " + String(resetInterval) + " minutes.");
+    system_state = 0;
+    esp_sleep_enable_timer_wakeup(resetInterval * 60000000);
+    LoRa.end();
+    delay(1000);
+    esp_deep_sleep_start();
+}
 
 void _initialSetup()
 {
-    uint64_t wakeup_pins = (1ULL << DIO0) | (1ULL << SENSOR_INPUT); // Bitmask for the pins that will trigger the wakeup
-    // Enable EXT1 wakeup for both pins, wake up when either pin goes HIGH
-    esp_sleep_enable_ext1_wakeup(wakeup_pins, ESP_EXT1_WAKEUP_ANY_HIGH);
-    Serial.println("Entering deep sleep...");
+    esp_sleep_enable_ext0_wakeup(DIO0, HIGH);                      // Enable wakeup on LoRa message reception.
+    esp_sleep_enable_timer_wakeup(TEMP_CHECK_INTERVAL * 60000000); // Enable wakeup on timer to check temperature sensor.
     system_state = 1;
+    LoRa.receive(); // Put the radio into receive mode
+    Serial.println("Entering deep sleep...");
     esp_deep_sleep_start();
 }
 
 void _respond()
 {
-    Serial.println("Wake up reason: " + String(esp_sleep_get_wakeup_cause()));
-
-    if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT1)
+    if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT0)
     {
-        uint64_t wakeup_pin_mask = esp_sleep_get_ext1_wakeup_status(); // Get wake-up status
-        if (wakeup_pin_mask != 0)
-        { // Ensure the wake-up cause was EXT1
-            if (wakeup_pin_mask & (1ULL << SENSOR_INPUT))
-            {
-                Serial.println("GPIO 2 caused the wakeup.");
-                sendPacket("sdeviceID");
-                // Go back to deep sleep.
-                system_state = 0;
-                esp_deep_sleep_start();
-            }
-            if (wakeup_pin_mask & (1ULL << DIO0))
-            {
-                Serial.println("GPIO 13 caused the wakeup.");
-                listenForPackets(LISTENING_INTERVAL);
-            }
+        Serial.println("Incoming LoRa message detected!");
+        String msg = listenForPackets(LISTENING_INT_LOW, LISTENING_INT_HIGH);
+        if (validateID(msg))
+        {
+            sendPacket(msg);
+            _systemReset(RESETINTERVAL);
+        }
+        else
+        {
+            _initialSetup();
+        }
+    }
+    else if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TIMER)
+    {
+        Serial.println("Fire sensor check Wakeup.");
+        digitalWrite(SENSORSWITCH, HIGH); // Turn on the sensor
+        delay(5000);                      // Wait for the sensor to stabilize
+        int reading = readDigitalSensor(SENSOR_INPUT);
+        digitalWrite(SENSORSWITCH, LOW); // Turn off the sensor
+        if (reading == LOW)
+        {
+            Serial.println("Fire Hazard Detected.");
+            sendPacket("FIRE");
+            _systemReset(RESETINTERVAL);
+        }
+        else
+        {
+            Serial.println("All good.");
+            // Go back to deep sleep.
+            _initialSetup();
         }
     }
 }
-
 void runFunction(int state_number)
 {
     void (*functionArray[])() = {_initialSetup, _respond};

@@ -7,7 +7,9 @@ String generateRandomID();
 bool validateID(String id);
 void runFunction(int state_number);
 void sensorSetup();
+// int readAnalogSensor(int pin, int numSamples = 10);
+bool readDigitalSensor(int pin);
 
 // lora
-void listenForPackets(unsigned long loopDuration);
+String listenForPackets(unsigned long lowerbound, unsigned long upperbound);
 void sendPacket( String message);

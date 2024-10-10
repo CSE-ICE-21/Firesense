@@ -7,17 +7,17 @@ void setupSerial()
   Serial.begin(115200);
   while (!Serial)
     ;
-  Serial.println("LoRa Sender");
 }
 
 void sensorSetup()
 {
-  pinMode(SENSOR_INPUT, INPUT); // Sensor Input
+  pinMode(SENSOR_INPUT, INPUT);  // Sensor Input
+  pinMode(SENSORSWITCH, OUTPUT); // Sensor Switch
 }
 
 void initLora()
 {
-  LoRa.setPins(SS, RST, DIO0);
+  LoRa.setPins(SS, -1, DIO0); // Reset pin is not used. Connect LoRa module Reset pin to the MCU Reset pin.
   // replace the LoRa.begin(---E-) argument with your location's frequency
   // 433E6 for Asia
   while (!LoRa.begin(433E6))
@@ -26,7 +26,6 @@ void initLora()
     delay(500);
   }
   Serial.println("LoRa Initialization Completed!");
-  LoRa.receive(); // Put the radio into receive mode
 }
 
 // Generation of a random 6-character ID (alphanumeric: 0-9, A-F) and verification of it.
@@ -101,3 +100,39 @@ bool validateID(String id)
 
   return false; // ID is invalid
 }
+
+// Read the digital sensor with debouncing
+bool readDigitalSensor(int pin)
+{
+  const unsigned long debounceDelay = 50; // 50 ms debounce time
+  unsigned long lastDebounceTime = millis(); // Start the debounce timer
+  int lastStableState = digitalRead(pin); // Get the initial state
+
+  while (millis() - lastDebounceTime < debounceDelay) // Wait for the debounce time
+  {
+    int currentState = digitalRead(pin); // Read the current state
+    if (currentState != lastStableState) // If the state changes, reset the timer
+    {
+      lastDebounceTime = millis();
+      lastStableState = currentState;
+    }
+  }
+
+  // Return the stable state after debounce delay
+  return lastStableState;
+}
+
+
+
+// Read the analog sensor with averaging and oversampling
+// int readAnalogSensor(int pin, int numSamples = 10) {
+//     long total = 0;
+
+//     // Take multiple samples and average them
+//     for (int i = 0; i < numSamples; i++) {
+//         total += analogRead(pin);
+//         delay(2); // Small delay to stabilize readings
+//     }
+
+//     return total / numSamples;  // Return the average reading
+// }
