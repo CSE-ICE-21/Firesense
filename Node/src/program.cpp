@@ -15,6 +15,7 @@ void _systemReset(uint64_t resetInterval) // Reset the system after a certain ti
 
 void _initialSetup()
 {
+    Serial.println("Device ID: " + deviceID);
     esp_sleep_enable_ext0_wakeup(DIO0, HIGH);                      // Enable wakeup on LoRa message reception.
     esp_sleep_enable_timer_wakeup(TEMP_CHECK_INTERVAL * 60000000); // Enable wakeup on timer to check temperature sensor.
     system_state = 1;
@@ -43,13 +44,13 @@ void _respond()
     {
         Serial.println("Fire sensor check Wakeup.");
         digitalWrite(SENSORSWITCH, HIGH); // Turn on the sensor
-        delay(5000);                      // Wait for the sensor to stabilize
+        delay(10000);                      // Wait for the sensor to stabilize
         int reading = readDigitalSensor(SENSOR_INPUT);
         digitalWrite(SENSORSWITCH, LOW); // Turn off the sensor
         if (reading == LOW)
         {
             Serial.println("Fire Hazard Detected.");
-            sendPacket("FIRE");
+            sendPacket(deviceID);
             _systemReset(RESETINTERVAL);
         }
         else

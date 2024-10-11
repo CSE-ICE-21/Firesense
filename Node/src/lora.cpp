@@ -3,8 +3,6 @@
 #include <globals.h>
 #include <constants.h>
 
-String deviceID;
-
 // Function to listen for incoming LoRa packets.
 String listenForPackets(unsigned long lowerbound, unsigned long upperbound)
 {

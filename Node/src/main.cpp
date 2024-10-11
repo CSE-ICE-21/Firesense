@@ -2,6 +2,7 @@
 #include <functions.h>
 
 RTC_DATA_ATTR int system_state = 0;
+RTC_DATA_ATTR String deviceID = getDeviceID();
 
 void setup()
 {

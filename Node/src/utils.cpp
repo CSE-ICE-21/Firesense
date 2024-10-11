@@ -1,6 +1,9 @@
 #include <functions.h>
 #include <constants.h>
 #include <LoRa.h>
+#include <Preferences.h>
+#include <nvs_flash.h>  // Include the NVS flash library for manual NVS initialization
+
 
 void setupSerial()
 { // Function to setup serial communication
@@ -26,6 +29,30 @@ void initLora()
     delay(500);
   }
   Serial.println("LoRa Initialization Completed!");
+}
+
+// Function to check Preferences for deviceID and generate if not found
+String getDeviceID()
+{
+    // Initialize the NVS (Non-Volatile Storage) system (Usually this should be handled by the preferences.h, but there was a error and hence done manually.)
+  if (nvs_flash_init() == ESP_ERR_NVS_NO_FREE_PAGES || nvs_flash_init() == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+    // If NVS partition was truncated or a new version was found, erase it and try again
+    nvs_flash_erase();
+    nvs_flash_init();
+  }
+  Preferences preferences; // Create a Preferences object
+  preferences.begin("device_info", false); // Start preferences in read-write mode
+  String device_Identifier = preferences.getString("deviceID", "NULL");
+
+  if (device_Identifier == "NULL")
+  {
+    device_Identifier = generateRandomID();
+    preferences.putString("deviceID", device_Identifier);
+    ;
+  }
+
+  preferences.end(); // Close preferences
+  return device_Identifier;
 }
 
 // Generation of a random 6-character ID (alphanumeric: 0-9, A-F) and verification of it.
@@ -104,9 +131,9 @@ bool validateID(String id)
 // Read the digital sensor with debouncing
 bool readDigitalSensor(int pin)
 {
-  const unsigned long debounceDelay = 50; // 50 ms debounce time
+  const unsigned long debounceDelay = 50;    // 50 ms debounce time
   unsigned long lastDebounceTime = millis(); // Start the debounce timer
-  int lastStableState = digitalRead(pin); // Get the initial state
+  int lastStableState = digitalRead(pin);    // Get the initial state
 
   while (millis() - lastDebounceTime < debounceDelay) // Wait for the debounce time
   {
@@ -121,8 +148,6 @@ bool readDigitalSensor(int pin)
   // Return the stable state after debounce delay
   return lastStableState;
 }
-
-
 
 // Read the analog sensor with averaging and oversampling
 // int readAnalogSensor(int pin, int numSamples = 10) {
