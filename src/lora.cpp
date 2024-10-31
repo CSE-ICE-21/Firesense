@@ -24,12 +24,12 @@ String listenForPackets(unsigned long lowerbound, unsigned long upperbound)
             {
                 return LoRaData;
             }
-            #ifndef GATEWAY
+#ifndef GATEWAY
             else if (LoRaData == "IMMEDIATE_RESET")
             {
                 systemReset(RESETINTERVAL); // Reset the system immediately
             }
-            #endif
+#endif
         }
     }
     Serial.println("No any valid packet received");
