@@ -38,4 +38,6 @@
 #define TINY_GSM_DEBUG SerialMon // Debug stream
 #define GSM_PIN "" // SIM card PIN (leave empty if not defined)
 #define TINY_GSM_USE_GPRS true // Use GPRS for internet connection
+#define MAX_GSM_CONNECTION_REATTEMPTS 3 // Maximum number of reattempts to connect to GSM network. then will send another sms saying the system is down.
+#define MAX_MQTT_CONNECTION_REATTEMPTS 3 // Maximum number of reattempts to connect to MQTT server. then will send another sms saying the system is down.
 #endif
