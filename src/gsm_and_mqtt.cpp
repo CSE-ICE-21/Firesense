@@ -44,12 +44,12 @@ boolean mqttConnect()
         return false;
     }
     SerialMon.println(" success");
-    mqtt.publish(DATA_SENDING_TOPIC, "Initial testing hazard message");
+    // mqtt.publish(DATA_SENDING_TOPIC, "Initial testing hazard message");
     mqtt.subscribe(DATA_RECEPTION_TOPIC);
     return mqtt.connected();
 }
 
-void GsmAndMqttSetup()
+bool GsmAndMqttSetup()
 {
     // Set console baud rate
     SerialMon.begin(115200);
@@ -81,17 +81,22 @@ void GsmAndMqttSetup()
     {
         SerialMon.println(" failed waiting for network");
         delay(10000);
-        return;
+        return false;
     }
     SerialMon.println(" successfully waited for network");
 
     if (modem.isNetworkConnected())
     {
         SerialMon.println("Network connected succesfully!");
+        return true;
+    }
+    else{
+        SerialMon.println("Network connection failed!");
+        return false;
     }
 }
 
-void GsmConnect(){
+bool GsmConnect(){
     #if TINY_GSM_USE_GPRS
     // GPRS connection parameters are usually set after network registration
     SerialMon.print(F("Connecting to :"));
@@ -100,7 +105,7 @@ void GsmConnect(){
     {
         SerialMon.println("GPRS Connection attempt failed!");
         delay(2000);
-        return;
+        return false;
     }
     SerialMon.println("GPRS Connection succesful!");
 
@@ -113,11 +118,12 @@ void GsmConnect(){
     // MQTT Broker setup
     mqtt.setServer(MQTT_SERVER, 1883);
     mqtt.setCallback(mqttCallback);
+    return true;
 }
 
 void sendMqttMessage(String Payload)
 {
-    if (mqtt.publish(DATA_SENDING_TOPIC, (("Fire Hazard : " + Payload).c_str())))
+    if (mqtt.publish(DATA_SENDING_TOPIC, (("Fire Hazard : " + Payload).c_str())),2)
     {
         Serial.println("Message sent to MQTT Broker");
     }

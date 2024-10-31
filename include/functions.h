@@ -25,8 +25,8 @@ void systemReset(uint64_t resetInterval); // Reset the system after a certain ti
 
 #ifdef GATEWAY
 //gsm and mqtt
-void GsmAndMqttSetup();
-void GsmConnect();
+bool GsmAndMqttSetup();
+bool GsmConnect();
 boolean mqttConnect();
 void sendMqttMessage(String Payload);
 void sendSms(String Payload);

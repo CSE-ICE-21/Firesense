@@ -6,17 +6,37 @@
 #ifdef GATEWAY
 void _sendHazard(String Payload)
 {
-    GsmAndMqttSetup();
+    while (!GsmAndMqttSetup())
+    {
+        Serial.println("GSM and MQTT Setup faled, Retrying GSM and MQTT setup...");
+        delay(500);
+    };
     sendSms(Payload);
-    GsmConnect();
-    if (mqttConnect())
+    for (int i = 0; i < MAX_GSM_CONNECTION_REATTEMPTS; i++)
     {
-        sendMqttMessage(Payload);
-    }
-    else
+        if (GsmConnect())
+        {
+            break;
+        }
+        else if (i == MAX_GSM_CONNECTION_REATTEMPTS - 1)
+        {
+            sendSms("System GPRS Down!\nServer will not get warned about the hazard!");
+            return;
+        }
+    };
+    for (int i = 0; i < MAX_MQTT_CONNECTION_REATTEMPTS; i++)
     {
-        Serial.println("MQTT Connection failed.");
-    }
+        if (mqttConnect())
+        {
+            sendMqttMessage(Payload);
+            break;
+        }
+        else if (i == MAX_MQTT_CONNECTION_REATTEMPTS - 1)
+        {
+            sendSms("MQTT Server connection failed!\nServer will not get warned about the hazard!");
+            return;
+        }
+    };
 }
 #endif
 
