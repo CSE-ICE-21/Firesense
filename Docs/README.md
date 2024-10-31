@@ -41,3 +41,7 @@ style="width: 60%; height: auto;" alt="Wiki Button"
 	<code><img width="50" src="./Readme-Assets/PlatformIO_logo.svg" alt="PlatformIO" title="UPlatformIO"/></code>
 	<code><img width="50" src="./Readme-Assets/255505529-a57a85ba-e2dd-4036-85b6-7e1532391627.png" alt="Arduino" title="Arduino"/></code>
 </div>
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](docs/LICENSE) file for details.
