@@ -44,7 +44,7 @@ boolean mqttConnect()
         return false;
     }
     SerialMon.println(" success");
-    mqtt.publish(DATA_SENDING_TOPIC, "Initial testing hazard message");
+    // mqtt.publish(DATA_SENDING_TOPIC, "Initial testing hazard message");
     mqtt.subscribe(DATA_RECEPTION_TOPIC);
     return mqtt.connected();
 }
@@ -117,7 +117,7 @@ void GsmConnect(){
 
 void sendMqttMessage(String Payload)
 {
-    if (mqtt.publish(DATA_SENDING_TOPIC, (("Fire Hazard : " + Payload).c_str())))
+    if (mqtt.publish(DATA_SENDING_TOPIC, (("Fire Hazard : " + Payload).c_str())),2)
     {
         Serial.println("Message sent to MQTT Broker");
     }
