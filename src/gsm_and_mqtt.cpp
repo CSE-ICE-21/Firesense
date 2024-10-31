@@ -90,14 +90,16 @@ bool GsmAndMqttSetup()
         SerialMon.println("Network connected succesfully!");
         return true;
     }
-    else{
+    else
+    {
         SerialMon.println("Network connection failed!");
         return false;
     }
 }
 
-bool GsmConnect(){
-    #if TINY_GSM_USE_GPRS
+bool GsmConnect()
+{
+#if TINY_GSM_USE_GPRS
     // GPRS connection parameters are usually set after network registration
     SerialMon.print(F("Connecting to :"));
     SerialMon.print(GPRS_APN);
@@ -123,7 +125,7 @@ bool GsmConnect(){
 
 void sendMqttMessage(String Payload)
 {
-    if (mqtt.publish(DATA_SENDING_TOPIC, (("Fire Hazard : " + Payload).c_str())),2)
+    if (mqtt.publish(DATA_SENDING_TOPIC, (("Fire Hazard : " + Payload).c_str())), 2)
     {
         Serial.println("Message sent to MQTT Broker");
     }

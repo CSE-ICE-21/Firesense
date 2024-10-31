@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <constants.h>
-//utils
+// utils
 void setupSerial();
 void initLora();
 String generateRandomID();
@@ -17,14 +17,14 @@ String listenForPackets(unsigned long lowerbound, unsigned long upperbound);
 #ifdef GATEWAY
 void sendSystemMessage(String message);
 #else
-void sendPacket( String message);
+void sendPacket(String message);
 
 // Program
 void systemReset(uint64_t resetInterval); // Reset the system after a certain time.
 #endif
 
 #ifdef GATEWAY
-//gsm and mqtt
+// gsm and mqtt
 bool GsmAndMqttSetup();
 bool GsmConnect();
 boolean mqttConnect();
